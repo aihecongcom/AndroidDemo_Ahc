@@ -15,11 +15,12 @@
         android:roundIcon="@mipmap/logo_app"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/Theme.AppCompat.NoActionBar">
         <!--  usesCleartextTraffic 9.0系统手动开启支持http-->
         <activity
             android:name=".HtmlActivity"></activity>
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

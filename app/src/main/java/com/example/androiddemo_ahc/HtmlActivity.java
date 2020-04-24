@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -32,6 +33,8 @@ public class HtmlActivity extends AppCompatActivity {
     private ValueCallback uploadMessageAboveL;
     private ValueCallback mUploadCallBack;
     private String mCameraFilePath;
+    private String param;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +42,22 @@ public class HtmlActivity extends AppCompatActivity {
         setContentView(R.layout.activity_html);
 
         webView=findViewById(R.id.webView);
+        findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                webView.clearCache(true);
+                finish();
+            }
+        });
 
+        String hide = getIntent().getStringExtra("HIDE");
 
-
-
+        if (hide.equals("hide_title")){//需要隐藏就传入headHidden=1 需要显示title就不传
+           param="&headHidden=1";
+        }
+        if (hide.equals("hide_no")){
+            findViewById(R.id.title).setBackgroundColor(getResources().getColor(R.color.black_333));
+        }
         String url="https://团队ID.ahc.ink/chat.html?headHidden=1&customer={\"名称\":\"张先生\",\"邮箱\":\"test@test.com\",\"手机\":\"19900000000\"}";
 
         //这里做一个传递顾客资料的示例（key字段可以根据自己需求，自定义）
@@ -51,7 +66,8 @@ public class HtmlActivity extends AppCompatActivity {
         paramEntity.set会员账号("test");
         paramEntity.set会员等级("VIP8");
         String s = JsonParseUtils.parseToJson(paramEntity);
-        url="https://团队ID.ahc.ink/chat.html?（这里需要换成自己工作台的对话链接）"+"headHidden=1&customer="+s;
+//        url="（这里需要换成自己工作台的对话链接网址）"+"?headHidden=1&customer="+s;
+        url="https://10003.ahc.ink/chat.html?"+"&customer="+s+param;
         setWebView(url);
     }
 
@@ -63,6 +79,7 @@ public class HtmlActivity extends AppCompatActivity {
         WebSettings webSettings = webView.getSettings();
         //设置WebView属性，能够执行Javascript脚本
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);//开启本地DOM存储
         //设置可以访问文件
         webSettings.setAllowFileAccess(true);
         webView.setWebChromeClient(mWebChromeClient);
@@ -76,24 +93,52 @@ public class HtmlActivity extends AppCompatActivity {
             //do you  work
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+
         @Override
-        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            //该方法在Build.VERSION_CODES.LOLLIPOP以前有效，从Build.VERSION_CODES.LOLLIPOP起，建议使用shouldOverrideUrlLoading(WebView, WebResourceRequest)} instead
+            //返回false，意味着请求过程里，不管有多少次的跳转请求（即新的请求地址），均交给webView自己处理，这也是此方法的默认处理
+            //返回true，说明你自己想根据url，做新的跳转，比如在判断url符合条件的情况下，我想让webView加载http://ask.csdn.net/questions/178242
 
-            if (request.getUrl()!=null){
-
+            if (url!=null){
+//                view.loadUrl(url);//用webView显示
+                //如果想要跳转到系统浏览器
                 try {
                     Intent intent = new Intent();
                     intent.setAction("android.intent.action.VIEW");
-                    intent.setData(request.getUrl());
+                    intent.setData(Uri.parse(url));
                     startActivity(intent);
                     return true;
                 }catch (Exception e){}
+                return true;
             }
 
             return false;
-
         }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
+        {
+            //返回false，意味着请求过程里，不管有多少次的跳转请求（即新的请求地址），均交给webView自己处理，这也是此方法的默认处理
+            //返回true，说明你自己想根据url，做新的跳转，比如在判断url符合条件的情况下，我想让webView加载http://ask.csdn.net/questions/178242
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (request.getUrl()!=null){
+//                    view.loadUrl(request.getUrl().toString());//用webView显示
+                    //如果想要跳转到系统浏览器
+                    try {
+                        Intent intent = new Intent();
+                        intent.setAction("android.intent.action.VIEW");
+                        intent.setData(request.getUrl());
+                        startActivity(intent);
+                        return true;
+                    }catch (Exception e){}
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
 
     };
     private WebChromeClient mWebChromeClient = new WebChromeClient() {
@@ -110,7 +155,6 @@ public class HtmlActivity extends AppCompatActivity {
                 showFileChooser();
             }else {
                 clearUploadMessage();
-
             }
             return true;
         }
