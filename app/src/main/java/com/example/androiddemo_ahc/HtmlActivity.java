@@ -66,8 +66,8 @@ public class HtmlActivity extends AppCompatActivity {
         paramEntity.set会员账号("test");
         paramEntity.set会员等级("VIP8");
         String s = JsonParseUtils.parseToJson(paramEntity);
-//        url="这里需要换成自己工作台的对话链接网址"+"?headHidden=1&customer="+s;
-        url="https://10003.ahc.ink/chat.html?"+"&customer="+s+param;
+//        url="这里需要换成自己工作台的对话链接网址"+"?headHidden=1&customer="+s+"&uniqueId=自己APP的会员ID(唯一ID绑定身份)";
+        url="https://10003.ahc.ink/chat.html?"+"&customer="+s+param;//这里记得拼上"&uniqueId=自己的id"
         setWebView(url);
     }
 
