@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.androiddemo_ahc">
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -8,6 +9,7 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/logo_app"
@@ -15,7 +17,9 @@
         android:roundIcon="@mipmap/logo_app"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
+<!--        Android 10.0的手机会抛出异常:java.io.FileNotFoundException: open failed: ENOENT (No such file or directory)-->
         <!--  usesCleartextTraffic 9.0系统手动开启支持http-->
         <activity
             android:name=".HtmlActivity"></activity>
